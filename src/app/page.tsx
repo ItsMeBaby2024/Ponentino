@@ -1,101 +1,167 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { Question, Drink, MoodType, AnswerRecord } from '../types';
+import { generateQuizQuestions, calculateMBTI } from '../lib/scoring';
+import LandingScreen from '../components/LandingScreen';
+import MoodStep from '../components/MoodStep';
+import TutorialStep from '../components/TutorialStep';
+import QuizCard from '../components/QuizCard';
+import ResultCard from '../components/ResultCard';
+
+type Step = 'landing' | 'mood' | 'tutorial' | 'quiz' | 'result';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [step, setStep] = useState<Step>('landing');
+  const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
+  const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+  const [matchedResult, setMatchedResult] = useState<{ 
+    mbti: string; 
+    drink: Drink; 
+    scores?: Record<string, number>; 
+    avgDuration?: number; 
+  } | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  // Pre-generate quiz questions on load or when resetting
+  const initializeQuizQuestions = () => {
+    let lastSelectedIds: string[] = [];
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('xoxo_last_question_ids');
+        if (stored) {
+          lastSelectedIds = JSON.parse(stored);
+        }
+      } catch (err) {
+        console.error('Error reading from localStorage:', err);
+      }
+    }
+
+    const newQuestions = generateQuizQuestions(lastSelectedIds);
+    setQuizQuestions(newQuestions);
+
+    // Save current selection for next session
+    if (typeof window !== 'undefined') {
+      try {
+        const idsToStore = newQuestions.map((q) => q.id);
+        localStorage.setItem('xoxo_last_question_ids', JSON.stringify(idsToStore));
+      } catch (err) {
+        console.error('Error saving to localStorage:', err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    initializeQuizQuestions();
+  }, []);
+
+  const handleStartTasting = () => {
+    setStep('mood');
+  };
+
+  const handleSelectMood = (mood: MoodType | null) => {
+    setSelectedMood(mood);
+    setStep('tutorial');
+  };
+
+  const handleBeginQuiz = () => {
+    setStep('quiz');
+    setCurrentQuestionIndex(0);
+    setAnswers({});
+    setQuestionStartTime(Date.now());
+  };
+
+  const handleAnswerQuestion = (agreed: boolean) => {
+    const currentQuestion = quizQuestions[currentQuestionIndex];
+    const duration = (Date.now() - questionStartTime) / 1000;
+    const updatedAnswers: Record<string, AnswerRecord> = {
+      ...answers,
+      [currentQuestion.id]: { agreed, duration }
+    };
+    setAnswers(updatedAnswers);
+
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setQuestionStartTime(Date.now());
+    } else {
+      // Finished all 6 questions! Calculate results using high-precision timing scoring
+      const result = calculateMBTI(updatedAnswers, quizQuestions, selectedMood);
+      setMatchedResult(result);
+      setStep('result');
+    }
+  };
+
+  const handleBack = () => {
+    if (step === 'quiz') {
+      if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex((prev) => prev - 1);
+        setQuestionStartTime(Date.now());
+      } else {
+        setStep('tutorial');
+      }
+    } else if (step === 'tutorial') {
+      setStep('mood');
+    } else if (step === 'mood') {
+      setStep('landing');
+    }
+  };
+
+  const handleRestart = () => {
+    setSelectedMood(null);
+    setAnswers({});
+    setCurrentQuestionIndex(0);
+    setMatchedResult(null);
+    initializeQuizQuestions();
+    setStep('landing');
+  };
+
+  const handleSelectDirectDrink = (drink: Drink, mbti: string) => {
+    setMatchedResult({ mbti, drink });
+    setStep('result');
+  };
+
+  return (
+    <main className="min-h-screen bg-[#FDFBF7] text-amber-950 flex flex-col justify-center items-center py-6 px-4 selection:bg-amber-100 relative">
+      {/* Decorative Outer Page Frame / Border mimicking fine restaurant menu card */}
+      <div className="absolute inset-4 pointer-events-none border border-amber-900/5 rounded-[2rem] hidden sm:block"></div>
+      <div className="absolute inset-5 pointer-events-none border border-amber-900/10 rounded-[1.8rem] hidden sm:block"></div>
+
+      <div className="w-full max-w-lg z-10">
+        {step === 'landing' && (
+          <LandingScreen onStart={handleStartTasting} onSelectDrink={handleSelectDirectDrink} />
+        )}
+
+        {step === 'mood' && (
+          <MoodStep onSelect={handleSelectMood} />
+        )}
+
+        {step === 'tutorial' && (
+          <TutorialStep onNext={handleBeginQuiz} />
+        )}
+
+        {step === 'quiz' && quizQuestions.length > 0 && (
+          <QuizCard
+            question={quizQuestions[currentQuestionIndex]}
+            currentIndex={currentQuestionIndex}
+            totalQuestions={quizQuestions.length}
+            onAnswer={handleAnswerQuestion}
+            onBack={handleBack}
+            selectedMood={selectedMood}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        )}
+
+        {step === 'result' && matchedResult && (
+          <ResultCard
+            drink={matchedResult.drink}
+            mbti={matchedResult.mbti}
+            scores={matchedResult.scores}
+            avgDuration={matchedResult.avgDuration}
+            onRestart={handleRestart}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        )}
+      </div>
+    </main>
   );
 }
