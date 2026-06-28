@@ -98,7 +98,7 @@ export default function LandingScreen({ onStart, onSelectDrink, language, onLang
         <div className="h-[1px] w-12 bg-amber-700/30"></div>
         <Sparkles className="w-4 h-4 animate-pulse" />
         <span className="text-xs uppercase tracking-widest font-medium text-amber-800 font-sans">
-          {isZh ? "XOXO 義式餐前酒" : "XOXO Aperitivo"}
+          {isZh ? "XOXO 意式餐前酒" : "XOXO Aperitivo"}
         </span>
         <Sparkles className="w-4 h-4 animate-pulse" />
         <div className="h-[1px] w-12 bg-amber-700/30"></div>
@@ -113,7 +113,7 @@ export default function LandingScreen({ onStart, onSelectDrink, language, onLang
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-red-950 leading-tight tracking-wide mb-6">
           {isZh ? (
             <>
-              哪款義式餐前酒 <br/>
+              哪款意式餐前酒 <br/>
               <span className="text-amber-800 italic font-normal">最契合</span> <br/>
               你的 MBTI？
             </>
@@ -130,7 +130,7 @@ export default function LandingScreen({ onStart, onSelectDrink, language, onLang
 
         <p className="text-amber-900/85 text-base leading-relaxed max-w-sm mx-auto mb-8 font-sans">
           {isZh 
-            ? "回答 6 個快速自評陳述，探索你的 XOXO 專屬特調。將你的性格化作一杯精緻的義式佳釀。"
+            ? "回答 6 個快速自評陳述，探索你的 XOXO 專屬特調。將你的性格化作一杯精緻的意式佳釀。"
             : "Answer 6 speed-run statements and discover your XOXO signature serve. Reinterpret your personality as an exquisite Italian drink."}
         </p>
 

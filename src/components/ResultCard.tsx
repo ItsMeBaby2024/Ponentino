@@ -110,7 +110,7 @@ const EMOTIONAL_PROFILES_ZH: Record<string, EmotionalProfile> = {
   ENFP: {
     spirito: '富有創意、樂觀，且極具真誠的表達。你是夢想的收集者和靈感的源泉，能在遇到的每個人身上看到無限可能，為平凡的日常生活注入自然、閃耀的魔力。',
     presenza: '毫不費力便散發出迷人的魅力，令人振奮。你能瞬間連結每個人的心，用純粹的好奇、玩樂和共同的歡笑填滿任何空間。',
-    gusto: '你喜愛輕盈、花香馥郁且氣泡細膩的特調——那些感覺就像夏日裡的一縷清風，邀請你在義大利溫暖的陽光下盡情編織美夢的風味。',
+    gusto: '你喜愛輕盈、花香馥郁且氣泡細膩的特調——那些感覺就像夏日裡的一縷清風，邀請你在意大利溫暖的陽光下盡情編織美夢的風味。',
   },
   ENTP: {
     spirito: '機智過人、高瞻遠矚，且樂在其中。你熱愛重塑規則，用閃爍著智慧光芒、不拘小節的頭腦，以及對探索的無限熱忱，發掘那些反傳統的獨特視角。',
@@ -125,7 +125,7 @@ const EMOTIONAL_PROFILES_ZH: Record<string, EmotionalProfile> = {
   ESFJ: {
     spirito: '心地善良、極具合作精神，且極其細心。你是最棒的東道主，在身邊的每一個人之間編織著和諧與情誼的紐帶。你熱衷於讚美他人並創造共同的歡樂儀式。',
     presenza: '一種溫暖、好客、極具社交溫度的愛意。你確保每個人的杯中都是滿的，每個人的聲音都被聆聽，每個人都感到被珍視、如歸家中。',
-    gusto: '你喜愛經典、起泡且備受歡迎的義式餐前酒——那些專為歡快碰杯、真摯祝福和縱情歡笑而生的飲品。',
+    gusto: '你喜愛經典、起泡且備受歡迎的意式餐前酒——那些專為歡快碰杯、真摯祝福和縱情歡笑而生的飲品。',
   },
   ENFJ: {
     spirito: '充滿魅力、口才極佳，且懷有深切的同理心。你是一位天生的導師和守護者，由對人類的真摯關愛所驅使。你能看到他人身上獨特的閃光點，並孜孜不倦地幫助他們綻放光芒。',
@@ -261,7 +261,7 @@ export default function ResultCard({ drink, mbti, scores, avgDuration, onRestart
   const drinkIngredients = isZh && translation ? translation.ingredientsZh : drink.ingredients;
 
   const handleCopy = async () => {
-    const shareText = isZh ? `🍷 XOXO 義式餐酒館 MBTI 飲品配對 🍷
+    const shareText = isZh ? `🍷 XOXO 意式餐酒館 MBTI 飲品配對 🍷
 ------------------------------------
 MBTI 類型: ${mbti} (${charTitle})
 專屬特調: ${drinkName} (${drink.category === 'cocktail' ? '雞尾酒' : '無醇特調'} | ${drink.style === 'sparkling' ? '氣泡' : '非氣泡'})
@@ -407,7 +407,7 @@ For entertainment and menu discovery only.`;
             <button
               onClick={() => setShowMbtiDetails(true)}
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-amber-800 uppercase bg-amber-100/60 hover:bg-amber-100 px-2.5 py-1 rounded-full border border-amber-200 truncate cursor-pointer transition-all hover:scale-105 active:scale-95 group text-left"
-              title={isZh ? "點擊查看您深度的義式內心精神畫像！" : "Click to see your rich Italian Emotional Portrait!"}
+              title={isZh ? "點擊查看您深度的意式內心精神畫像！" : "Click to see your rich Italian Emotional Portrait!"}
             >
               <span className="truncate">{mbti} • {charTitle}</span>
               <span className="relative flex h-2 w-2 shrink-0">
