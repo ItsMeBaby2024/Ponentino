@@ -22,7 +22,7 @@ export const questions: Question[] = [
   { id: 'SN04', text: 'I choose by mood first.', textZh: '挑選飲品時，我首要看重的是心情氛圍。', dimension: 'S/N', agree: 'N', disagree: 'S' },
   { id: 'SN05', text: 'I enjoy clear menu descriptions.', textZh: '我喜歡清晰直觀的菜單描述。', dimension: 'S/N', agree: 'S', disagree: 'N' },
   { id: 'SN06', text: 'I like drinks with a story.', textZh: '我更鍾意那些帶有故事底蘊的飲品。', dimension: 'S/N', agree: 'N', disagree: 'S' },
-  { id: 'SN07', text: 'I prefer proven favourites.', textZh: '我更喜歡已被時間驗證的热門經典。', dimension: 'S/N', agree: 'S', disagree: 'N' },
+  { id: 'SN07', text: 'I prefer proven favourites.', textZh: '我更喜歡已被時間驗證的熱門經典。', dimension: 'S/N', agree: 'S', disagree: 'N' },
   { id: 'SN08', text: 'I enjoy surprise combinations.', textZh: '我喜歡意想不到的創意搭配。', dimension: 'S/N', agree: 'N', disagree: 'S' },
   { id: 'SN09', text: 'I notice ingredients quickly.', textZh: '我能迅速察覺出飲品中的各種配料原料。', dimension: 'S/N', agree: 'S', disagree: 'N' },
   { id: 'SN10', text: 'I imagine the overall vibe.', textZh: '我更喜歡憑空想像整體的氛圍與感覺。', dimension: 'S/N', agree: 'N', disagree: 'S' },

@@ -223,7 +223,7 @@ export default function LandingScreen({ onStart, onSelectDrink, language, onLang
             <div className="bg-amber-50/40 border-t border-amber-900/5 p-4 text-center">
               <p className="text-[10px] text-amber-800/50 flex items-center justify-center gap-1">
                 <Info className="w-3.5 h-3.5 text-amber-700/40" />
-                {isZh ? "点击任意饮品查看其品鉴卡详情" : "Tap any drink to view its tasting card specs"}
+                {isZh ? "點擊任意飲品查看其品鑑卡詳情" : "Tap any drink to view its tasting card specs"}
               </p>
             </div>
           </div>

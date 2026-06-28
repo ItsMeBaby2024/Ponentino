@@ -92,9 +92,9 @@ export default function MoodStep({ onSelect, language }: MoodStepProps) {
         </h2>
         <p className="text-amber-900/85 text-sm mb-8 font-sans max-w-xs mx-auto">
           {isZh 
-            ? '今晚您更偏愛以何種基調體驗您的餐前酒？這將指引我們的推薦。'
-            : 'How do you prefer to experience your aperitivo tonight? This helps guide our selection.'}
-        </p>
+            ? '今日您更偏愛以何種基調體驗您的餐前酒？這將指引我們的推薦。'
+            : 'How do you prefer to experience your aperitivo today? This helps guide our selection.'}
+        </p>=
 
         {/* Mood Options Grid */}
         <div className="grid grid-cols-1 gap-4 w-full text-left mb-8">
