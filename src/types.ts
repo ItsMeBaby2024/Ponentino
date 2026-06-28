@@ -5,6 +5,7 @@ export type MoodType = 'Fresh' | 'Bitter' | 'Fruity' | 'Elegant';
 export interface Question {
   id: string;
   text: string;
+  textZh?: string;
   dimension: Dimension;
   agree: MBTIType;
   disagree: MBTIType;
@@ -13,16 +14,22 @@ export interface Question {
 export interface Drink {
   mbti: string; // e.g. 'ESTJ'
   name: string;
+  nameZh?: string;
   category: 'cocktail' | 'mocktail';
   style: 'sparkling' | 'non-sparkling';
   abv: string; // e.g. '5.7%'
   ingredients: string[]; // e.g. ['elderflower and rosemary syrup 15 ml', 'lemon juice 10 ml', ...]
+  ingredientsZh?: string[];
   tasteProfile: string; // e.g. 'floral, herbal, lightly citrusy, refreshing'
+  tasteProfileZh?: string;
   intro: string; // short matching personality intro
+  introZh?: string;
   pairing: string[]; // e.g. ['antipasti', 'burrata', 'prosciutto']
+  pairingZh?: string[];
   machineSlots: number[]; // e.g. [10, 12]
   virtualTopUp: string; // e.g. 'V1 Prosecco, V2 soda water'
   menuDescription: string;
+  menuDescriptionZh?: string;
   imagePrompt: string;
   colorPalette: {
     primary: string; // hex or tailwind class

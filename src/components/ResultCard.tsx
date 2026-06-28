@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Drink } from '../types';
 import { RefreshCw, Copy, Check, Wine, Utensils, Zap, Clock, Sparkles, X, Heart } from 'lucide-react';
+import { drinksTranslations } from '../data/drinksTranslations';
 
 interface ResultCardProps {
   drink: Drink;
@@ -8,6 +9,7 @@ interface ResultCardProps {
   scores?: Record<string, number>;
   avgDuration?: number;
   onRestart: () => void;
+  language: 'en' | 'zh';
 }
 
 const MBTI_CHARACTERS: Record<string, string> = {
@@ -29,11 +31,113 @@ const MBTI_CHARACTERS: Record<string, string> = {
   ENTJ: 'The Commander',
 };
 
+const MBTI_CHARACTERS_ZH: Record<string, string> = {
+  ISTJ: '檢查員',
+  ISFJ: '守護者',
+  INFJ: '倡導者',
+  INTJ: '戰略家',
+  ISTP: '鑑賞家',
+  ISFP: '藝術家',
+  INFP: '調停者',
+  INTP: '思想家',
+  ESTP: '實踐者',
+  ESFP: '表演者',
+  ENFP: '競選者',
+  ENTP: '發明家',
+  ESTJ: '執行官',
+  ESFJ: '執政官',
+  ENFJ: '主角',
+  ENTJ: '指揮官',
+};
+
 interface EmotionalProfile {
   spirito: string;
   presenza: string;
   gusto: string;
 }
+
+const EMOTIONAL_PROFILES_ZH: Record<string, EmotionalProfile> = {
+  ISTJ: {
+    spirito: '腳踏實地、真實誠懇、大智若愚。你是任何社交場合中的定海神針，比起轉瞬即逝的潮流，你更喜歡樸實的真理、歷久彌新的坦誠以及優雅的可靠。',
+    presenza: '你散發著一種令人安心、深厚沉穩的氣場。在你不偏不倚、持之以恆的穩健和守護下，他人能獲得極大的慰藉和安全感。',
+    gusto: '你欣賞精準、歷史和經典比例。你在歷經時間考驗、完美平衡的傳統風味中找到純粹的樂趣。',
+  },
+  ISFJ: {
+    spirito: '溫柔、體貼、極具奉獻精神。你的內心是一片安靜慷慨的避風港，總能預先察覺他人未說出口的需求，並從守護他人、讓大家感到被愛中獲得快樂。',
+    presenza: '猶如雨夜裡一盞散發著微光、溫暖人心的蠟燭，你讓身邊的人沉浸在絕對安全、溫柔善良和強烈歸屬感中。',
+    gusto: '你細品那些能喚起懷舊和家的味道，欣賞能撫慰和煥活心靈的純淨、清爽風味。',
+  },
+  INFJ: {
+    spirito: '深思熟慮、神秘，且富有詩意。你擁有一種罕見、安靜的敏銳，總在探尋每一場對話背後的深意，內心深處珍藏著一個極其精緻、充滿共情與隱秘夢想的世界。',
+    presenza: '一種令人好奇而又倍感慰藉的獨特氣場，就像深夜裡親密無間的內心傾訴。人們會本能地向你敞開心扉，被你溫暖、善解人意的深邃靈魂所吸引。',
+    gusto: '你熱愛複雜、甜苦交織的調和，這些味道帶有隱秘的層次，能在漫長、專注、帶有深層連接的夜晚中慢慢舒展、綻放。',
+  },
+  INTJ: {
+    spirito: '高瞻遠矚、嚴謹，且極富遠見。你將世界看作一幅由複雜模式交織而成的掛毯，憑藉敏銳、獨立的頭腦運作，欣賞深刻的智慧、真正的匠人精神和絕對的清晰。',
+    presenza: '一種極具吸引力、高度專注的氣場。你的沉默從不空洞，它是一幅寫滿宏大戰略思考的畫卷，贏得人們無聲的敬重與由衷的讚嘆。',
+    gusto: '你喜歡大膽、草本且毫不妥協的複雜風味——那些能挑戰味蕾、需要細細品味、帶有機智思考的卓越口感。',
+  },
+  ISTP: {
+    spirito: '敏銳、務實，且舉手投足間透露著灑脫。你以冷靜、敏銳的感知力遊刃有餘地應對生活，憑藉鎮定自若和天生的動手探索欲解決挑戰，看重行動與毫無粉飾的真相。',
+    presenza: '一種輕鬆閒適、低調自信的氣場，讓身邊的人覺得，無論外界掀起怎樣的狂風暴雨，一切都在你的絕對掌控之中。',
+    gusto: '你欣賞乾淨、平衡且在技術上完美和諧的調配。沒有浮誇的修飾，只有一目了然、爽利凜冽的極致純粹。',
+  },
+  ISFP: {
+    spirito: '溫柔、藝術，且蘊含著安靜的表現力。你是一位感官與視覺的詩人，沉浸於當下的美好，通過微妙而精美的舉動來表達你細膩、熱忱的內心世界。',
+    presenza: '一種柔和、寧靜且包容萬物的溫暖。你創造出一個富有美學質感的自然空間，讓他人能夠在這裡自由地呼吸、放鬆並做最真實的自己。',
+    gusto: '你鍾情於果香主導、感官層次豐富且視覺效果驚艷的色彩。對你而言，品嚐一杯飲品是一場精緻而富有儀式感的感官藝術行為。',
+  },
+  INFP: {
+    spirito: '富有想像力、浪漫，且極其理想主義。你擁有一顆溫柔、耀眼的靈魂，善於在平凡中發現魔力，守護著一個由深層精神價值和對世界滿懷共情的詩意秘密花園。',
+    presenza: '一種輕柔、如夢似幻、極具療癒感的能量。靠近你，就像聽到一首甜美、懷舊的旋律，讓人想起自己最純粹的心靈。',
+    gusto: '你決不會滿足於單一調調，而珍愛芬芳、奇幻且帶給驚喜的草本調和風味——那些能激發起想像力、帶你飛往美麗遠方的悠長味道。',
+  },
+  INTP: {
+    spirito: '充滿好奇、結構嚴謹，且帶著獨特的古靈精怪。你是抽象概念的探索者，尋求邏輯的連貫和獨到的見解。你在極其豐富、安靜的內心世界裡，為解開複雜的智力謎題而感到無比快樂。',
+    presenza: '一種獨立、隨性且極其迷人的氣場。你的冷幽默和不期而至的獨創哲學，能讓任何餐桌的討論趣味翻倍。',
+    gusto: '你喜愛濃縮、犀利且刺激感官的調配——那些能喚醒神經、為深夜靈感交談提供燃料的強烈風味。',
+  },
+  ESTP: {
+    spirito: '大膽、充滿幹勁，且毫無畏懼。你是大自然的一股不可抗拒的力量，生活在超高清的解析度中。你追逐刺激、行動以及即時的感官衝擊，總是帶著具有感染力的燦爛笑容迎接每一個挑戰。',
+    presenza: '充滿電能、在社交場合極具磁性。你帶來陽光與勢頭，能將任何普通的聚會瞬間變成一場難忘、高能量的狂歡慶祝。',
+    gusto: '你渴望辛辣、爽烈且對比鮮明的味道——那些在舌尖跳躍、瞬間點燃感官並讓人想要共同舉杯痛飲的狂野風味。',
+  },
+  ESFP: {
+    spirito: '活力四射、熱情奔放，且活得絢麗精彩！你是極致的感官愛好者，盡情吸收生活中的美好，並毫無保留地分享給每個人。你的笑聲是一份禮物，為黑白的世界塗抹上絢爛色彩。',
+    presenza: '一種奪目、歡樂且極切親近的能量。只要你在場，空氣彷彿變得更加輕盈，燈光變得更加溫暖，每個人都情不自禁地想加入你的狂歡。',
+    gusto: '你鐘愛甜美、起泡且視覺效果耀眼的佳釀——那些既賞心悅目又美味可口的感官盛宴，能將周圍的笑聲無限放大。',
+  },
+  ENFP: {
+    spirito: '富有創意、樂觀，且極具真誠的表達。你是夢想的收集者和靈感的源泉，能在遇到的每個人身上看到無限可能，為平凡的日常生活注入自然、閃耀的魔力。',
+    presenza: '毫不費力便散發出迷人的魅力，令人振奮。你能瞬間連結每個人的心，用純粹的好奇、玩樂和共同的歡笑填滿任何空間。',
+    gusto: '你喜愛輕盈、花香馥郁且氣泡細膩的特調——那些感覺就像夏日裡的一縷清风，邀請你在義大利溫暖的陽光下盡情編織美夢的風味。',
+  },
+  ENTP: {
+    spirito: '機智過人、高瞻遠矚，且樂在其中。你熱愛重塑規則，用閃爍著智慧光芒、不拘小節的頭腦，以及對探索的無限熱忱，發掘那些反傳統的獨特視角。',
+    presenza: '充滿啟發性、挑戰傳統且極具磁性。你是思維火花的催化劑，讓人們帶著驚喜與歡笑，開啟全新的思考方式。',
+    gusto: '你表達時語出驚人，更陶醉於那些在經典苦味配方上融入氣泡的意外驚喜——那些讓你的思維與味蕾都在不斷猜測、博弈的複雜碰撞。',
+  },
+  ESTJ: {
+    spirito: '井然有序、決斷力強，且極度忠誠。你是一位天生的領導者，看重榮譽、傳統和清晰的協調。你在建立社群、創造秩序和將規劃完美落地的過程中獲得極大的滿足感。',
+    presenza: '清晰、堅毅且極具威信。你展現出一股可靠的權威感和守護力量，讓身邊的人瞬間感到安全、踏實並受到支持。',
+    gusto: '你欣賞大膽、經典且帶柑橘風味的組合。高標準的視覺呈現與苦甜交織的層次，訴說著永恆的傳統與出色的品質。',
+  },
+  ESFJ: {
+    spirito: '心地善良、極具合作精神，且極其細心。你是最棒的東道主，在身邊的每一個人之間編織著和諧與情誼的紐帶。你熱衷於讚美他人並創造共同的歡樂儀式。',
+    presenza: '一種溫暖、好客、極具社交溫度的愛意。你確保每個人的杯中都是滿的，每個人的聲音都被聆聽，每個人都感到被珍視、如歸家中。',
+    gusto: '你喜愛經典、起泡且備受歡迎的意式餐前酒——那些專為歡快碰杯、真摯祝福和縱情歡笑而生的飲品。',
+  },
+  ENFJ: {
+    spirito: '充滿魅力、口才極佳，且懷有深切的同理心。你是一位天生的導師和守護者，由對人類的真摯關愛所驅使。你能看到他人身上獨特的閃光點，並孜孜不倦地幫助他們綻放光芒。',
+    presenza: '耀眼、激勵人心且富有情感。你的聲音帶著說服人的力量，能觸動心弦，打破隔閡，在共同的美好願景下將人們凝聚在一起。',
+    gusto: '你迷戀那些鮮活、熱情洋溢且酸甜交織的甘露——能夠煥活精神、象徵著希望、友誼與共同慶祝的清爽風味。',
+  },
+  ENTJ: {
+    spirito: '果斷、充滿策略，且有着永無止境的抱負。你是一位高瞻遠矚的建設者，帶著嚴密、有條理的決心迎接每一個挑戰。你活著就是為了協調、引領並在世界上留下追求極致的印記。',
+    presenza: '威嚴、犀利，且具有極強的個人魅力。你展現出極具磁性的卓越能力，鼓舞並引領他人實現他們最頂尖的潛力。',
+    gusto: '你要求醇厚、精緻且結構極佳的風味——那些強勁、溫暖、尊貴的頂級飲品，必須能吸引全部的注意力與敬意。',
+  },
+};
 
 const EMOTIONAL_PROFILES: Record<string, EmotionalProfile> = {
   ISTJ: {
@@ -138,16 +242,43 @@ const cleanIngredient = (ing: string): string => {
   return ing.replace(/\s*\d+(\.\d+)?\s*ml/gi, '').trim();
 };
 
-export default function ResultCard({ drink, mbti, scores, avgDuration, onRestart }: ResultCardProps) {
+export default function ResultCard({ drink, mbti, scores, avgDuration, onRestart, language }: ResultCardProps) {
   const [copied, setCopied] = useState(false);
   const [showMbtiDetails, setShowMbtiDetails] = useState(false);
 
-  const charTitle = MBTI_CHARACTERS[mbti] || '';
-  const emotionalProfile = EMOTIONAL_PROFILES[mbti];
+  const isZh = language === 'zh';
+  const translation = drinksTranslations[drink.mbti];
+
+  const charTitle = isZh ? (MBTI_CHARACTERS_ZH[mbti] || '') : (MBTI_CHARACTERS[mbti] || '');
+  const emotionalProfile = isZh ? EMOTIONAL_PROFILES_ZH[mbti] : EMOTIONAL_PROFILES[mbti];
   const palette = drink.colorPalette;
 
+  const drinkName = isZh && translation ? translation.nameZh : drink.name;
+  const drinkIntro = isZh && translation ? translation.introZh : drink.intro;
+  const drinkTasteProfile = isZh && translation ? translation.tasteProfileZh : drink.tasteProfile;
+  const drinkPairing = isZh && translation ? translation.pairingZh : drink.pairing;
+  const drinkMenuDescription = isZh && translation ? translation.menuDescriptionZh : drink.menuDescription;
+  const drinkIngredients = isZh && translation ? translation.ingredientsZh : drink.ingredients;
+
   const handleCopy = async () => {
-    const shareText = `🍷 XOXO Italian Bistro Drink Match 🍷
+    const shareText = isZh ? `🍷 XOXO 意式餐馆 MBTI 饮品匹配 🍷
+------------------------------------
+MBTI 类型: ${mbti} (${charTitle})
+专属特调: ${drinkName} (${drink.category === 'cocktail' ? '鸡尾酒' : '无醇特调'} | ${drink.style === 'sparkling' ? '起泡' : '非起泡'})
+估算酒精度: ${drink.abv}
+
+✨ 品鉴风味: ${drinkTasteProfile}
+🇮🇹 性格契合: ${drinkIntro}
+
+📋 配方原料:
+${drinkIngredients.map(ing => `  - ${cleanIngredient(ing)}`).join('\n')}
+
+🧀 推荐美食搭配:
+  - ${drinkPairing.join(', ')}
+
+在 Ponentino 享用您的专属特调吧！
+------------------------------------
+仅供娱乐与酒单探索。` : `🍷 XOXO Italian Bistro Drink Match 🍷
 ------------------------------------
 MBTI Type: ${mbti} (${charTitle})
 Signature Serve: ${drink.name} (${drink.category.toUpperCase()} | ${drink.style.toUpperCase()})
@@ -227,22 +358,28 @@ For entertainment and menu discovery only.`;
     if (avg === 0) return null;
     if (avg < 2.2) {
       return {
-        title: 'Spontaneous & Decisive',
-        desc: `Your average reaction time was a rapid ${avg.toFixed(1)}s. You follow your direct gut-instinct instantly, leading with high energy and spontaneous excitement!`,
+        title: isZh ? '洒脱果断' : 'Spontaneous & Decisive',
+        desc: isZh 
+          ? `您的平均反应时间仅为较快的 ${avg.toFixed(1)}秒。您瞬间跟随直觉，充满活力与率性的激情！`
+          : `Your average reaction time was a rapid ${avg.toFixed(1)}s. You follow your direct gut-instinct instantly, leading with high energy and spontaneous excitement!`,
         icon: Zap,
         color: 'text-amber-700 bg-amber-100/50 border-amber-200/50'
       };
     } else if (avg > 4.0) {
       return {
-        title: 'Thoughtful & Deliberate',
-        desc: `Your average reaction time was a reflective ${avg.toFixed(1)}s. You value depth and structure, carefully savoring statements and pondering nuances!`,
+        title: isZh ? '深思熟虑' : 'Thoughtful & Deliberate',
+        desc: isZh 
+          ? `您的平均反应时间是沉稳的 ${avg.toFixed(1)}秒。您看重深度与逻辑，仔细推敲每一个陈述与细节！`
+          : `Your average reaction time was a reflective ${avg.toFixed(1)}s. You value depth and structure, carefully savoring statements and pondering nuances!`,
         icon: Clock,
         color: 'text-rose-700 bg-rose-50/50 border-rose-200/30'
       };
     } else {
       return {
-        title: 'Balanced & Savoring',
-        desc: `Your average reaction time was a balanced ${avg.toFixed(1)}s. You appreciate rhythm, pacing yourself dynamically and enjoying both gut feel and detail!`,
+        title: isZh ? '平衡细品' : 'Balanced & Savoring',
+        desc: isZh 
+          ? `您的平均反应时间是平衡的 ${avg.toFixed(1)}秒。您懂得把握节奏，在直觉与细节之间细细品味！`
+          : `Your average reaction time was a balanced ${avg.toFixed(1)}s. You appreciate rhythm, pacing yourself dynamically and enjoying both gut feel and detail!`,
         icon: Sparkles,
         color: 'text-emerald-700 bg-emerald-50/40 border-emerald-200/30'
       };
@@ -270,7 +407,7 @@ For entertainment and menu discovery only.`;
             <button
               onClick={() => setShowMbtiDetails(true)}
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-amber-800 uppercase bg-amber-100/60 hover:bg-amber-100 px-2.5 py-1 rounded-full border border-amber-200 truncate cursor-pointer transition-all hover:scale-105 active:scale-95 group text-left"
-              title="Click to see your rich Italian Emotional Portrait!"
+              title={isZh ? "点击查看您深度的意式内心精神画像！" : "Click to see your rich Italian Emotional Portrait!"}
             >
               <span className="truncate">{mbti} • {charTitle}</span>
               <span className="relative flex h-2 w-2 shrink-0">
@@ -279,9 +416,9 @@ For entertainment and menu discovery only.`;
               </span>
             </button>
             <div className="flex gap-1.5 shrink-0">
-              <span className="text-[10px] font-sans font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-full text-white"
+              <span className="text-[10px] font-sans font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-full text-white animate-pulse"
                     style={{ backgroundColor: palette.accent }}>
-                {drink.category}
+                {isZh ? (drink.category === 'cocktail' ? '鸡尾酒' : '无醇特调') : drink.category}
               </span>
               <span className="text-[10px] font-sans font-bold tracking-wider text-amber-900/70 uppercase bg-amber-50 px-2 py-1 rounded-full border border-amber-800/10">
                 ABV {drink.abv}
@@ -292,10 +429,10 @@ For entertainment and menu discovery only.`;
           {/* Drink Name & Styling */}
           <div className="text-center mb-6">
             <h2 className="font-serif text-3xl md:text-4xl font-extrabold text-red-950 leading-tight">
-              {drink.name}
+              {drinkName}
             </h2>
             <p className="text-amber-800 font-serif italic text-sm mt-1">
-              &ldquo;{drink.tasteProfile}&rdquo;
+              &ldquo;{drinkTasteProfile}&rdquo;
             </p>
           </div>
 
@@ -304,20 +441,20 @@ For entertainment and menu discovery only.`;
           {/* Personality Intro Section */}
           <div className="mb-6 bg-amber-50/40 p-4 rounded-xl border border-amber-900/5">
             <h3 className="font-serif font-bold text-red-950 text-sm mb-1.5 flex items-center gap-1.5">
-              <Wine className="w-4 h-4 text-amber-800" /> Why It Matches You
+              <Wine className="w-4 h-4 text-amber-800" /> {isZh ? '为什么契合你' : 'Why It Matches You'}
             </h3>
             <p className="text-xs text-amber-900/85 leading-relaxed font-sans">
-              {drink.intro}
+              {drinkIntro}
             </p>
           </div>
 
           {/* Ingredients List (Without ml) */}
           <div className="mb-6">
             <h3 className="font-serif font-bold text-red-950 text-sm mb-2.5 uppercase tracking-wide">
-              Recipe Ingredients
+              {isZh ? '配方原料' : 'Recipe Ingredients'}
             </h3>
             <ul className="text-xs text-amber-900/95 space-y-2 font-sans pl-5 list-disc border-l border-amber-700/20 capitalize">
-              {drink.ingredients.map((ing, idx) => (
+              {drinkIngredients.map((ing, idx) => (
                 <li key={idx} className="marker:text-amber-800/65">
                   {cleanIngredient(ing)}
                 </li>
@@ -328,10 +465,10 @@ For entertainment and menu discovery only.`;
           {/* Pairings (Illustrated Emojis) */}
           <div className="mb-6">
             <h3 className="font-serif font-bold text-red-950 text-sm mb-2.5 flex items-center gap-1.5 uppercase tracking-wide">
-              <Utensils className="w-4 h-4 text-amber-800" /> Aperitivo Pairings
+              <Utensils className="w-4 h-4 text-amber-800" /> {isZh ? '阿佩里蒂沃配餐搭配' : 'Aperitivo Pairings'}
             </h3>
             <div className="flex flex-wrap gap-2 pl-2 border-l border-amber-700/20">
-              {drink.pairing.map((item, idx) => (
+              {drinkPairing.map((item, idx) => (
                 <span 
                   key={idx} 
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50/60 border border-amber-900/5 text-amber-950 rounded-xl text-xs font-semibold capitalize shadow-sm"
@@ -346,10 +483,10 @@ For entertainment and menu discovery only.`;
           {/* Menu Card Short Description */}
           <div className="mb-1">
             <h3 className="font-serif font-bold text-red-950 text-sm mb-1 uppercase tracking-wide">
-              Bistro Description
+              {isZh ? '酒单说明' : 'Bistro Description'}
             </h3>
             <p className="text-xs italic text-amber-800/90 leading-relaxed font-sans">
-              {drink.menuDescription}
+              {drinkMenuDescription}
             </p>
           </div>
 
@@ -367,13 +504,13 @@ For entertainment and menu discovery only.`;
         <div className="w-full bg-white border-2 border-amber-900/10 rounded-3xl shadow-md p-6 md:p-8 mb-8 space-y-6">
           <div className="text-center">
             <span className="text-[10px] tracking-widest font-bold uppercase text-amber-800 bg-amber-100/40 border border-amber-200/50 px-3 py-1 rounded-full font-sans">
-              Tasting Profile Metrics
+              {isZh ? '品鉴维度指标' : 'Tasting Profile Metrics'}
             </span>
             <h3 className="font-serif text-2xl font-bold text-red-950 mt-3">
-              Your Personality Breakdown
+              {isZh ? '您的性格维度解析' : 'Your Personality Breakdown'}
             </h3>
             <p className="text-xs text-amber-900/60 font-sans mt-1">
-              Based on your mood, choices, and response reaction pacing
+              {isZh ? '基于您的选择、倾向以及回答反应速度' : 'Based on your mood, choices, and response reaction pacing'}
             </p>
           </div>
 
@@ -381,10 +518,10 @@ For entertainment and menu discovery only.`;
 
           {/* Dimensions Sliders */}
           <div className="space-y-4">
-            {renderDimensionRow('Extrovert (E)', 'E', 'Introvert (I)', 'I', scores.E, scores.I)}
-            {renderDimensionRow('Sensory (S)', 'S', 'Intuitive (N)', 'N', scores.S, scores.N)}
-            {renderDimensionRow('Logical (T)', 'T', 'Feeling (F)', 'F', scores.T, scores.F)}
-            {renderDimensionRow('Structured (J)', 'J', 'Spontaneous (P)', 'P', scores.J, scores.P)}
+            {renderDimensionRow(isZh ? '外向型 (E)' : 'Extrovert (E)', 'E', isZh ? '内向型 (I)' : 'Introvert (I)', 'I', scores.E, scores.I)}
+            {renderDimensionRow(isZh ? '实感型 (S)' : 'Sensory (S)', 'S', isZh ? '直觉型 (N)' : 'Intuitive (N)', 'N', scores.S, scores.N)}
+            {renderDimensionRow(isZh ? '理性型 (T)' : 'Logical (T)', 'T', isZh ? '感性型 (F)' : 'Feeling (F)', 'F', scores.T, scores.F)}
+            {renderDimensionRow(isZh ? '判断型 (J)' : 'Structured (J)', 'J', isZh ? '感知型 (P)' : 'Spontaneous (P)', 'P', scores.J, scores.P)}
           </div>
 
           {/* Tasting Pace Summary */}
@@ -411,12 +548,12 @@ For entertainment and menu discovery only.`;
           {copied ? (
             <>
               <Check className="w-5 h-5 text-emerald-300" />
-              Copied to Clipboard!
+              {isZh ? '已复制到剪贴板！' : 'Copied to Clipboard!'}
             </>
           ) : (
             <>
               <Copy className="w-5 h-5" />
-              Copy Menu Card Details
+              {isZh ? '复制品鉴卡详情' : 'Copy Menu Card Details'}
             </>
           )}
         </button>
@@ -426,7 +563,7 @@ For entertainment and menu discovery only.`;
           className="w-full py-4 px-6 bg-white hover:bg-amber-50 text-amber-900 font-serif text-base font-bold rounded-xl shadow-sm transition-all duration-300 border border-amber-800/15 flex items-center justify-center gap-2 active:scale-[0.99]"
         >
           <RefreshCw className="w-4 h-4" />
-          Start a New Tasting
+          {isZh ? '开启全新品鉴' : 'Start a New Tasting'}
         </button>
       </div>
 
@@ -438,7 +575,7 @@ For entertainment and menu discovery only.`;
             <div className="bg-white px-6 py-5 border-b border-amber-900/5 flex justify-between items-center relative">
               <div className="text-left">
                 <span className="text-[10px] font-mono font-bold tracking-widest text-amber-800 uppercase bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/50">
-                  {mbti} • Spirit Portrait
+                  {mbti} • {isZh ? '内心精神画像' : 'Spirit Portrait'}
                 </span>
                 <h2 className="font-serif font-extrabold text-red-950 text-2xl mt-2 leading-tight">
                   {charTitle}
@@ -447,7 +584,7 @@ For entertainment and menu discovery only.`;
               <button
                 onClick={() => setShowMbtiDetails(false)}
                 className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-amber-50 text-amber-900/70 transition-all active:scale-95"
-                aria-label="Close profile details"
+                aria-label={isZh ? "关闭详情" : "Close profile details"}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -459,7 +596,7 @@ For entertainment and menu discovery only.`;
               {/* Il Tuo Spirito Section */}
               <div className="space-y-2">
                 <h3 className="text-xs uppercase tracking-widest font-extrabold text-amber-800 flex items-center gap-1.5">
-                  <Heart className="w-4 h-4 text-rose-700 fill-rose-100" /> Il Tuo Spirito <span className="text-amber-800/30 text-[10px] normal-case font-normal italic font-serif">(Your Inner Spirit)</span>
+                  <Heart className="w-4 h-4 text-rose-700 fill-rose-100" /> {isZh ? '内心精神 (Il Tuo Spirito)' : <>Il Tuo Spirito <span className="text-amber-800/30 text-[10px] normal-case font-normal italic font-serif">(Your Inner Spirit)</span></>}
                 </h3>
                 <p className="text-sm text-amber-950/90 leading-relaxed font-sans bg-amber-50/40 p-4 rounded-2xl border border-amber-900/5 italic">
                   &ldquo;{emotionalProfile.spirito}&rdquo;
@@ -469,7 +606,7 @@ For entertainment and menu discovery only.`;
               {/* La Tua Presenza Section */}
               <div className="space-y-2">
                 <h3 className="text-xs uppercase tracking-widest font-extrabold text-amber-800 flex items-center gap-1.5">
-                  <Wine className="w-4 h-4 text-amber-800" /> La Tua Presenza <span className="text-amber-800/30 text-[10px] normal-case font-normal italic font-serif">(Your Social Aura)</span>
+                  <Wine className="w-4 h-4 text-amber-800" /> {isZh ? '社交气场 (La Tua Presenza)' : <>La Tua Presenza <span className="text-amber-800/30 text-[10px] normal-case font-normal italic font-serif">(Your Social Aura)</span></>}
                 </h3>
                 <p className="text-sm text-amber-900/85 leading-relaxed pl-4 border-l-2 border-amber-800/20">
                   {emotionalProfile.presenza}
@@ -479,7 +616,7 @@ For entertainment and menu discovery only.`;
               {/* Come Gusti Section */}
               <div className="space-y-2">
                 <h3 className="text-xs uppercase tracking-widest font-extrabold text-amber-800 flex items-center gap-1.5">
-                  <Utensils className="w-4 h-4 text-amber-800" /> Come Gusti <span className="text-amber-800/30 text-[10px] normal-case font-normal italic font-serif">(Your Savoring Style)</span>
+                  <Utensils className="w-4 h-4 text-amber-800" /> {isZh ? '品鉴风格 (Come Gusti)' : <>Come Gusti <span className="text-amber-800/30 text-[10px] normal-case font-normal italic font-serif">(Your Savoring Style)</span></>}
                 </h3>
                 <p className="text-sm text-amber-900/85 leading-relaxed pl-4 border-l-2 border-amber-800/20">
                   {emotionalProfile.gusto}
@@ -495,7 +632,7 @@ For entertainment and menu discovery only.`;
                 className="w-full py-3 px-6 text-white font-serif text-sm font-bold rounded-xl transition-all shadow-sm hover:shadow active:scale-95"
                 style={{ backgroundColor: palette.accent }}
               >
-                Ritorna al Menu
+                {isZh ? '返回酒单' : 'Ritorna al Menu'}
               </button>
             </div>
           </div>
@@ -504,7 +641,7 @@ For entertainment and menu discovery only.`;
 
       {/* Footer disclaimer */}
       <div className="mt-8 text-[10px] text-amber-800/60 uppercase tracking-widest text-center">
-        For entertainment and menu discovery only.
+        {isZh ? '仅供娱乐与酒单探索。' : 'For entertainment and menu discovery only.'}
       </div>
     </div>
   );

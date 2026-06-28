@@ -18,12 +18,43 @@ export default function Home() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+  const [language, setLanguage] = useState<'en' | 'zh'>('en');
   const [matchedResult, setMatchedResult] = useState<{ 
     mbti: string; 
     drink: Drink; 
     scores?: Record<string, number>; 
     avgDuration?: number; 
   } | null>(null);
+
+  // Initialize language from localStorage or browser settings
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('xoxo_language') as 'en' | 'zh' | null;
+        if (stored === 'en' || stored === 'zh') {
+          setLanguage(stored);
+        } else {
+          const browserLang = navigator.language;
+          if (browserLang.toLowerCase().includes('zh')) {
+            setLanguage('zh');
+          }
+        }
+      } catch (err) {
+        console.error('Error reading language from localStorage:', err);
+      }
+    }
+  }, []);
+
+  const handleSetLanguage = (lang: 'en' | 'zh') => {
+    setLanguage(lang);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('xoxo_language', lang);
+      } catch (err) {
+        console.error('Error saving language to localStorage:', err);
+      }
+    }
+  };
 
   // Pre-generate quiz questions on load or when resetting
   const initializeQuizQuestions = () => {
@@ -130,15 +161,20 @@ export default function Home() {
 
       <div className="w-full max-w-lg z-10">
         {step === 'landing' && (
-          <LandingScreen onStart={handleStartTasting} onSelectDrink={handleSelectDirectDrink} />
+          <LandingScreen 
+            onStart={handleStartTasting} 
+            onSelectDrink={handleSelectDirectDrink} 
+            language={language}
+            onLanguageChange={handleSetLanguage}
+          />
         )}
 
         {step === 'mood' && (
-          <MoodStep onSelect={handleSelectMood} />
+          <MoodStep onSelect={handleSelectMood} language={language} />
         )}
 
         {step === 'tutorial' && (
-          <TutorialStep onNext={handleBeginQuiz} />
+          <TutorialStep onNext={handleBeginQuiz} language={language} />
         )}
 
         {step === 'quiz' && quizQuestions.length > 0 && (
@@ -149,6 +185,7 @@ export default function Home() {
             onAnswer={handleAnswerQuestion}
             onBack={handleBack}
             selectedMood={selectedMood}
+            language={language}
           />
         )}
 
@@ -159,6 +196,7 @@ export default function Home() {
             scores={matchedResult.scores}
             avgDuration={matchedResult.avgDuration}
             onRestart={handleRestart}
+            language={language}
           />
         )}
       </div>
