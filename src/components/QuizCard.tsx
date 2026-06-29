@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Question } from '../types';
-import { ThumbsUp, ThumbsDown, ArrowLeft, Clock, Sparkles } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, ArrowLeft, Clock, Sparkles, Wine } from 'lucide-react';
 
 interface QuizCardProps {
   question: Question;
@@ -32,6 +32,7 @@ export default function QuizCard({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isZh = language === 'zh';
+  const isAlcoholQuestion = question.id === 'ALCOHOL_PREF';
 
   // Timer effect
   useEffect(() => {
@@ -122,7 +123,9 @@ export default function QuizCard({
           <div className="mt-6">
             <div className="h-[1px] w-12 bg-amber-700/20 mx-auto mb-4"></div>
             <p className="text-[10px] text-amber-900/40 uppercase tracking-widest font-sans">
-              {isZh ? '選擇最符合您真實想法的選項' : 'Choose what feels most authentic'}
+              {isAlcoholQuestion 
+                ? (isZh ? '選擇您今晚想要的品飲體驗' : 'Select your preferred tasting experience') 
+                : (isZh ? '選擇最符合您真實想法的選項' : 'Choose what feels most authentic')}
             </p>
           </div>
         </div>
@@ -133,33 +136,65 @@ export default function QuizCard({
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => onAnswer(false)}
-            className="group flex flex-col items-center justify-center p-4 bg-rose-50 border-2 border-rose-200 hover:border-rose-300 rounded-2xl transition-all duration-200 active:scale-[0.98]"
-            aria-label={isZh ? "不同意該陳述" : "Disagree with statement"}
+            className={`group flex flex-col items-center justify-center p-4 rounded-2xl transition-all duration-200 active:scale-[0.98] ${
+              isAlcoholQuestion 
+                ? 'bg-amber-50/50 border-2 border-amber-200 hover:border-amber-300' 
+                : 'bg-rose-50 border-2 border-rose-200 hover:border-rose-300'
+            }`}
+            aria-label={isAlcoholQuestion ? (isZh ? "選擇無酒精" : "Choose alcohol-free") : (isZh ? "不同意該陳述" : "Disagree with statement")}
           >
-            <div className="w-12 h-12 rounded-full bg-rose-100/50 group-hover:bg-rose-100 flex items-center justify-center text-rose-800 mb-2 shadow-sm">
-              <ThumbsDown className="w-6 h-6 transition-transform group-hover:scale-110" />
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 shadow-sm ${
+              isAlcoholQuestion 
+                ? 'bg-amber-100/50 group-hover:bg-amber-100 text-amber-800' 
+                : 'bg-rose-100/50 group-hover:bg-rose-100 text-rose-800'
+            }`}>
+              {isAlcoholQuestion ? (
+                <Sparkles className="w-6 h-6 transition-transform group-hover:scale-110" />
+              ) : (
+                <ThumbsDown className="w-6 h-6 transition-transform group-hover:scale-110" />
+              )}
             </div>
-            <span className="font-serif font-bold text-rose-950 text-base leading-none">
-              {isZh ? '不同意' : 'Disagree'}
+            <span className={`font-serif font-bold text-base leading-none ${isAlcoholQuestion ? 'text-amber-950' : 'text-rose-950'}`}>
+              {isAlcoholQuestion 
+                ? (isZh ? '無酒精' : 'Alcohol-Free') 
+                : (isZh ? '不同意' : 'Disagree')}
             </span>
-            <span className="hidden md:inline-block text-[10px] font-mono text-rose-950/40 mt-1 uppercase tracking-widest">
-              {isZh ? '按鍵: [A] 或 [←]' : 'Key: [A] or [←]'}
+            <span className="text-[10px] font-mono text-amber-950/50 mt-1 uppercase tracking-widest text-center">
+              {isAlcoholQuestion 
+                ? (isZh ? 'Mocktail • $78+' : 'Mocktail • $78+') 
+                : (isZh ? '按鍵: [A] 或 [←]' : 'Key: [A] or [←]')}
             </span>
           </button>
 
           <button
             onClick={() => onAnswer(true)}
-            className="group flex flex-col items-center justify-center p-4 bg-emerald-50 border-2 border-emerald-200 hover:border-emerald-300 rounded-2xl transition-all duration-200 active:scale-[0.98]"
-            aria-label={isZh ? "同意該陳述" : "Agree with statement"}
+            className={`group flex flex-col items-center justify-center p-4 rounded-2xl transition-all duration-200 active:scale-[0.98] ${
+              isAlcoholQuestion 
+                ? 'bg-red-50/50 border-2 border-red-200 hover:border-red-300' 
+                : 'bg-emerald-50 border-2 border-emerald-200 hover:border-emerald-300'
+            }`}
+            aria-label={isAlcoholQuestion ? (isZh ? "選擇有酒精" : "With alcohol") : (isZh ? "同意該陳述" : "Agree with statement")}
           >
-            <div className="w-12 h-12 rounded-full bg-emerald-100/50 group-hover:bg-emerald-100 flex items-center justify-center text-emerald-800 mb-2 shadow-sm">
-              <ThumbsUp className="w-6 h-6 transition-transform group-hover:scale-110" />
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 shadow-sm ${
+              isAlcoholQuestion 
+                ? 'bg-red-100/50 group-hover:bg-red-100 text-red-800' 
+                : 'bg-emerald-100/50 group-hover:bg-emerald-100 text-emerald-800'
+            }`}>
+              {isAlcoholQuestion ? (
+                <Wine className="w-6 h-6 transition-transform group-hover:scale-110" />
+              ) : (
+                <ThumbsUp className="w-6 h-6 transition-transform group-hover:scale-110" />
+              )}
             </div>
-            <span className="font-serif font-bold text-emerald-950 text-base leading-none">
-              {isZh ? '同意' : 'Agree'}
+            <span className={`font-serif font-bold text-base leading-none ${isAlcoholQuestion ? 'text-red-950' : 'text-emerald-950'}`}>
+              {isAlcoholQuestion 
+                ? (isZh ? '有酒精' : 'With Alcohol') 
+                : (isZh ? '同意' : 'Agree')}
             </span>
-            <span className="hidden md:inline-block text-[10px] font-mono text-emerald-950/40 mt-1 uppercase tracking-widest">
-              {isZh ? '按鍵: [D] 或 [→]' : 'Key: [D] or [→]'}
+            <span className="text-[10px] font-mono text-amber-950/50 mt-1 uppercase tracking-widest text-center">
+              {isAlcoholQuestion 
+                ? (isZh ? 'Cocktail • $98+' : 'Cocktail • $98+') 
+                : (isZh ? '按鍵: [D] 或 [→]' : 'Key: [D] or [→]')}
             </span>
           </button>
         </div>

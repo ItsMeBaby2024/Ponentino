@@ -264,7 +264,7 @@ export default function ResultCard({ drink, mbti, scores, avgDuration, onRestart
     const shareText = isZh ? `🍷 XOXO 意式餐酒館 MBTI 飲品配對 🍷
 ------------------------------------
 MBTI 類型: ${mbti} (${charTitle})
-專屬特調: ${drinkName} (${drink.category === 'cocktail' ? '雞尾酒' : '無醇特調'} | ${drink.style === 'sparkling' ? '氣泡' : '非氣泡'})
+專屬特調: ${drinkName} $${drink.category === 'cocktail' ? '98+' : '78+'} (${drink.category === 'cocktail' ? '雞尾酒' : '無醇特調'} | ${drink.style === 'sparkling' ? '氣泡' : '非氣泡'})
 估算酒精濃度: ${drink.abv}
 
 ✨ 品鑑風味: ${drinkTasteProfile}
@@ -281,7 +281,7 @@ ${drinkIngredients.map(ing => `  - ${cleanIngredient(ing)}`).join('\n')}
 僅供娛樂與酒單探索。` : `🍷 XOXO Italian Bistro Drink Match 🍷
 ------------------------------------
 MBTI Type: ${mbti} (${charTitle})
-Signature Serve: ${drink.name} (${drink.category.toUpperCase()} | ${drink.style.toUpperCase()})
+Signature Serve: ${drink.name} $${drink.category === 'cocktail' ? '98+' : '78+'} (${drink.category.toUpperCase()} | ${drink.style.toUpperCase()})
 Est. ABV: ${drink.abv}
 
 ✨ Taste Profile: ${drink.tasteProfile}
@@ -429,7 +429,7 @@ For entertainment and menu discovery only.`;
           {/* Drink Name & Styling */}
           <div className="text-center mb-6">
             <h2 className="font-serif text-3xl md:text-4xl font-extrabold text-red-950 leading-tight">
-              {drinkName}
+              {drinkName} <span className="text-amber-800 text-2xl md:text-3xl font-normal ml-2">${drink.category === 'cocktail' ? '98+' : '78+'}</span>
             </h2>
             <p className="text-amber-800 font-serif italic text-sm mt-1">
               &ldquo;{drinkTasteProfile}&rdquo;

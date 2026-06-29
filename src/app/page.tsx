@@ -19,6 +19,7 @@ export default function Home() {
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
   const [language, setLanguage] = useState<'en' | 'zh'>('en');
+  const [alcoholPreference, setAlcoholPreference] = useState<'cocktail' | 'mocktail'>('cocktail');
   const [matchedResult, setMatchedResult] = useState<{ 
     mbti: string; 
     drink: Drink; 
@@ -70,13 +71,25 @@ export default function Home() {
       }
     }
 
-    const newQuestions = generateQuizQuestions(lastSelectedIds);
+    const mbtiQuestions = generateQuizQuestions(lastSelectedIds);
+    
+    // Add the special alcohol preference question as Question 1 (index 0)
+    const alcoholQuestion: Question = {
+      id: 'ALCOHOL_PREF',
+      text: 'What kind of drink are you looking to enjoy today?',
+      textZh: '今天您偏好有酒精還是無酒精的飲品？',
+      dimension: 'J/P', // Placeholder
+      agree: 'P',
+      disagree: 'J'
+    };
+
+    const newQuestions = [alcoholQuestion, ...mbtiQuestions];
     setQuizQuestions(newQuestions);
 
-    // Save current selection for next session
+    // Save current selection for next session (only store standard question ids)
     if (typeof window !== 'undefined') {
       try {
-        const idsToStore = newQuestions.map((q) => q.id);
+        const idsToStore = mbtiQuestions.map((q) => q.id);
         localStorage.setItem('xoxo_last_question_ids', JSON.stringify(idsToStore));
       } catch (err) {
         console.error('Error saving to localStorage:', err);
@@ -107,6 +120,15 @@ export default function Home() {
   const handleAnswerQuestion = (agreed: boolean) => {
     const currentQuestion = quizQuestions[currentQuestionIndex];
     const duration = (Date.now() - questionStartTime) / 1000;
+
+    // Handle alcohol preference specially
+    if (currentQuestion.id === 'ALCOHOL_PREF') {
+      setAlcoholPreference(agreed ? 'cocktail' : 'mocktail');
+      setCurrentQuestionIndex(1);
+      setQuestionStartTime(Date.now());
+      return;
+    }
+
     const updatedAnswers: Record<string, AnswerRecord> = {
       ...answers,
       [currentQuestion.id]: { agreed, duration }
@@ -117,8 +139,10 @@ export default function Home() {
       setCurrentQuestionIndex((prev) => prev + 1);
       setQuestionStartTime(Date.now());
     } else {
-      // Finished all 6 questions! Calculate results using high-precision timing scoring
-      const result = calculateMBTI(updatedAnswers, quizQuestions, selectedMood);
+      // Finished all questions! Calculate results using high-precision timing scoring
+      // Filter out ALCOHOL_PREF question from MBTI scoring questions
+      const mbtiQuestions = quizQuestions.filter((q) => q.id !== 'ALCOHOL_PREF');
+      const result = calculateMBTI(updatedAnswers, mbtiQuestions, selectedMood, alcoholPreference);
       setMatchedResult(result);
       setStep('result');
     }
@@ -144,6 +168,7 @@ export default function Home() {
     setAnswers({});
     setCurrentQuestionIndex(0);
     setMatchedResult(null);
+    setAlcoholPreference('cocktail');
     initializeQuizQuestions();
     setStep('landing');
   };

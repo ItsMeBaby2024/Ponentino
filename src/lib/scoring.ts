@@ -63,7 +63,8 @@ export function generateQuizQuestions(lastSelectedIds: string[] = []): Question[
 export function calculateMBTI(
   answers: Record<string, AnswerRecord>,
   questions: Question[],
-  mood: MoodType | null
+  mood: MoodType | null,
+  pref: 'cocktail' | 'mocktail' = 'cocktail'
 ): {
   mbti: string;
   drink: Drink;
@@ -136,8 +137,8 @@ export function calculateMBTI(
 
   const finalMBTI = `${e_i}${s_n}${t_f}${j_p}`;
 
-  // Find corresponding drink
-  const matchedDrink = allDrinks.find((d) => d.mbti === finalMBTI) || allDrinks[0];
+  // Find corresponding drink based on preference
+  const matchedDrink = getMatchedDrink(finalMBTI, pref);
 
   // Calculate average duration
   let totalDuration = 0;
@@ -157,4 +158,45 @@ export function calculateMBTI(
     scores,
     avgDuration
   };
+}
+
+/**
+ * Maps any calculated MBTI type to the closest matching drink of the preferred category
+ * (cocktail or mocktail) with hand-crafted compatibility mapping.
+ */
+export function getMatchedDrink(mbti: string, pref: 'cocktail' | 'mocktail'): Drink {
+  // 1. First, check if there is an exact match with the given MBTI and category
+  const exactMatch = allDrinks.find((d) => d.mbti === mbti && d.category === pref);
+  if (exactMatch) return exactMatch;
+
+  // 2. If not, use our custom optimized mapping to find the most compatible drink in the selected category
+  if (pref === 'cocktail') {
+    // These 5 MBTI types originally map to mocktails, so we map them to cocktails
+    const cocktailMapping: Record<string, string> = {
+      ENFJ: 'ENFP', // Cranberry Ginger Fizz 0.0 -> Limoncello Prosecco Spritz
+      INTP: 'INTJ', // Lemon Ginger Cooler 0.0 -> Fernet Ginger Highball
+      ISFP: 'INFJ', // Cranberry Pineapple Cooler 0.0 -> Pineapple Rum Cooler
+      ISFJ: 'ISTJ', // Pineapple Orange Cooler 0.0 -> Milano Torino
+      INFP: 'INFJ', // Italian Soda Rosso 0.0 -> Pineapple Rum Cooler
+    };
+    const targetMbti = cocktailMapping[mbti] || mbti;
+    return allDrinks.find((d) => d.mbti === targetMbti && d.category === 'cocktail') || allDrinks[0];
+  } else {
+    // These 11 MBTI types originally map to cocktails, so we map them to mocktails
+    const mocktailMapping: Record<string, string> = {
+      ENFP: 'ENFJ', // Limoncello Prosecco Spritz -> Cranberry Ginger Fizz 0.0
+      ESFP: 'ENFJ', // Aperol Ginger Fizz -> Cranberry Ginger Fizz 0.0
+      ESFJ: 'ISFJ', // Cosmopolitan -> Pineapple Orange Cooler 0.0
+      INFJ: 'INFP', // Pineapple Rum Cooler -> Italian Soda Rosso 0.0
+      ESTJ: 'ISFJ', // Negroni -> Pineapple Orange Cooler 0.0
+      ISTJ: 'ISFJ', // Milano Torino -> Pineapple Orange Cooler 0.0
+      ESTP: 'ISFP', // Garibaldi -> Cranberry Pineapple Cooler 0.0
+      ISTP: 'ISFP', // Italian Margarita -> Cranberry Pineapple Cooler 0.0
+      ENTP: 'INTP', // Limoncello Martini -> Lemon Ginger Cooler 0.0
+      INTJ: 'INTP', // Fernet Ginger Highball -> Lemon Ginger Cooler 0.0
+      ENTJ: 'INTP', // Amaretto Sour Italiano -> Lemon Ginger Cooler 0.0
+    };
+    const targetMbti = mocktailMapping[mbti] || mbti;
+    return allDrinks.find((d) => d.mbti === targetMbti && d.category === 'mocktail') || allDrinks.find((d) => d.category === 'mocktail') || allDrinks[0];
+  }
 }
