@@ -47,8 +47,11 @@ export default function InteractiveFloorPlan({
         return res.text();
       })
       .then((data) => {
-        // Strip out title to avoid double titles, keep the inner SVG tag
-        setSvgContent(data);
+        // Force the root <svg> to be fully responsive by replacing hardcoded pixel sizes
+        let responsiveSvg = data;
+        responsiveSvg = responsiveSvg.replace(/<svg([^>]+?)(width="2176"|width='2176')/, '<svg$1width="100%"');
+        responsiveSvg = responsiveSvg.replace(/<svg([^>]+?)(height="1632"|height='1632')/, '<svg$1height="100%"');
+        setSvgContent(responsiveSvg);
       })
       .catch((err) => {
         console.error('Error inlining floor plan SVG:', err);
@@ -76,7 +79,7 @@ export default function InteractiveFloorPlan({
       {svgContent ? (
         <div
           dangerouslySetInnerHTML={{ __html: svgContent }}
-          className="w-full h-full object-cover pointer-events-none"
+          className="absolute inset-0 w-full h-full pointer-events-none [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-amber-900/40 text-xs">
