@@ -1,32 +1,10 @@
 import React from 'react';
 import { ArrowLeft, Sparkles, MapPin } from 'lucide-react';
-
-interface TableLayout {
-  id: string;
-  label: string;
-  x: number; // percentage X center
-  y: number; // percentage Y center
-  width: number; // percentage width
-  height: number; // percentage height
-  isRound: boolean;
-}
-
-const TABLES: TableLayout[] = [
-  { id: '12', label: '12', x: 7.67, y: 5.45, width: 7.5, height: 7.5, isRound: true },
-  { id: '11', label: '11', x: 4.14, y: 22.43, width: 7.5, height: 7.5, isRound: true },
-  { id: '10', label: '10', x: 3.17, y: 31.50, width: 7.5, height: 7.5, isRound: true },
-  { id: '15', label: '15', x: 25.05, y: 33.03, width: 9.0, height: 7.5, isRound: false },
-  { id: '18', label: '18', x: 50.23, y: 36.52, width: 8.5, height: 8.5, isRound: true },
-  { id: '19', label: '19', x: 78.58, y: 39.46, width: 9.0, height: 7.5, isRound: false },
-  { id: '20', label: '20', x: 91.04, y: 45.47, width: 7.5, height: 7.5, isRound: true },
-  { id: '1', label: '1', x: 5.70, y: 80.64, width: 6.5, height: 6.5, isRound: false },
-  { id: '2', label: '2', x: 10.57, y: 88.79, width: 6.5, height: 6.5, isRound: true },
-  { id: '3', label: '3', x: 3.54, y: 91.36, width: 6.5, height: 6.5, isRound: true }
-];
+import InteractiveFloorPlan from './InteractiveFloorPlan';
 
 interface TableSelectionStepProps {
   selectedTable: string | null;
-  onSelect: (tableId: string) => void;
+  onSelect: (tableId: string | null) => void;
   onConfirm: () => void;
   onBack: () => void;
   language: 'en' | 'zh';
@@ -80,56 +58,11 @@ export default function TableSelectionStep({
             </p>
           </div>
 
-          {/* Interactive Floor Plan Container */}
-          <div className="relative w-full aspect-[4/3] bg-amber-50/20 border border-amber-900/5 rounded-2xl overflow-hidden shadow-inner">
-            {/* Unnumbered Floor Plan Image */}
-            <img 
-              src="/fall_floor_plan_unnumbered.png" 
-              alt="Floor Plan" 
-              className="w-full h-full object-cover select-none pointer-events-none"
-            />
-
-            {/* Clickable Overlay Tables */}
-            {TABLES.map((table) => {
-              const isSelected = selectedTable === table.id;
-              
-              // CSS coordinates: table.x & table.y are centers, width/height are bounding boxes
-              const style: React.CSSProperties = {
-                left: `${table.x}%`,
-                top: `${table.y}%`,
-                width: `${table.width}%`,
-                height: `${table.height}%`,
-                transform: 'translate(-50%, -50%)',
-              };
-
-              return (
-                <button
-                  key={table.id}
-                  onClick={() => onSelect(table.id)}
-                  style={style}
-                  className={`absolute group flex items-center justify-center transition-all duration-300 ${
-                    table.isRound ? 'rounded-full' : 'rounded-lg'
-                  } ${
-                    isSelected
-                      ? 'bg-yellow-400/70 border-[1.5px] border-amber-500 shadow-md scale-105 z-20 animate-pulse'
-                      : 'bg-transparent border border-transparent hover:bg-amber-500/15 hover:border-amber-500/30 cursor-pointer z-10'
-                  }`}
-                  title={`${isZh ? '桌號' : 'Table'} ${table.label}`}
-                >
-                  {/* Subtle marker or table number if selected */}
-                  {isSelected ? (
-                    <span className="font-sans font-extrabold text-[11px] md:text-xs text-red-950 scale-110 drop-shadow-sm">
-                      {table.label}
-                    </span>
-                  ) : (
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity font-sans font-bold text-[8px] text-amber-900/80 bg-white/90 px-1 py-0.5 rounded shadow-sm border border-amber-900/10 pointer-events-none">
-                      {table.label}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          {/* Interactive Vector SVG Floor Plan */}
+          <InteractiveFloorPlan
+            selectedTable={selectedTable}
+            onSelectionChange={onSelect}
+          />
 
           {/* Helper Legend */}
           <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-amber-900/50 uppercase tracking-widest font-sans">

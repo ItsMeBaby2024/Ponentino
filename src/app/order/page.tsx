@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, CheckCircle, Clock, MapPin, Bell, Coffee, Wine } from 'lucide-react';
+import InteractiveFloorPlan from '../../components/InteractiveFloorPlan';
 
 interface Order {
   id: string;
@@ -13,19 +14,6 @@ interface Order {
   hktTimestamp: string;
   isoTimestamp: string;
 }
-
-const TABLE_COORDS: Record<string, { x: number; y: number; isRound: boolean }> = {
-  '12': { x: 7.67, y: 5.45, isRound: true },
-  '11': { x: 4.14, y: 22.43, isRound: true },
-  '10': { x: 3.17, y: 31.50, isRound: true },
-  '15': { x: 25.05, y: 33.03, isRound: false },
-  '18': { x: 50.23, y: 36.52, isRound: true },
-  '19': { x: 78.58, y: 39.46, isRound: false },
-  '20': { x: 91.04, y: 45.47, isRound: true },
-  '1': { x: 5.70, y: 80.64, isRound: false },
-  '2': { x: 10.57, y: 88.79, isRound: true },
-  '3': { x: 3.54, y: 91.36, isRound: true }
-};
 
 export default function OrderDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -93,7 +81,6 @@ export default function OrderDashboard() {
 
   // Find the selected order's table details
   const selectedOrder = orders.find(o => o.id === selectedOrderId);
-  const highlightedTable = selectedOrder ? TABLE_COORDS[selectedOrder.table] : null;
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-amber-950 p-4 sm:p-6 md:p-8 font-sans">
@@ -270,51 +257,20 @@ export default function OrderDashboard() {
                 )}
               </div>
 
-              {/* Numbered Floor Plan Image Container */}
-              <div className="relative w-full aspect-[4/3] bg-amber-50/20 border border-amber-900/5 rounded-xl overflow-hidden shadow-inner">
-                <img 
-                  src="/fall_floor_plan_numbered.png" 
-                  alt="Numbered Floor Plan" 
-                  className="w-full h-full object-cover select-none pointer-events-none"
+              {/* Interactive Vector SVG Numbered Floor Plan */}
+              <div className="w-full">
+                <InteractiveFloorPlan
+                  selectedTable={selectedOrder ? selectedOrder.table : null}
+                  onSelectionChange={(tableId) => {
+                    if (tableId) {
+                      const foundOrder = orders.find(o => o.table === tableId);
+                      if (foundOrder) {
+                        setSelectedOrderId(foundOrder.id);
+                      }
+                    }
+                  }}
+                  isNumbered={true}
                 />
-
-                {/* Pulsing Table Highlight Pointer */}
-                {highlightedTable && selectedOrder && (
-                  <div
-                    style={{
-                      left: `${highlightedTable.x}%`,
-                      top: `${highlightedTable.y}%`,
-                      width: `${highlightedTable.isRound ? '8%' : '10%'}`,
-                      height: `${highlightedTable.isRound ? '8%' : '7.5%'}`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                    className={`absolute z-30 flex items-center justify-center border-2 border-red-500 bg-red-500/40 shadow-lg ${
-                      highlightedTable.isRound ? 'rounded-full' : 'rounded-lg'
-                    } animate-ping`}
-                  >
-                    <div className="w-2.5 h-2.5 bg-red-600 rounded-full"></div>
-                  </div>
-                )}
-                {highlightedTable && selectedOrder && (
-                  <div
-                    style={{
-                      left: `${highlightedTable.x}%`,
-                      top: `${highlightedTable.y}%`,
-                      width: `${highlightedTable.isRound ? '8.5%' : '10.5%'}`,
-                      height: `${highlightedTable.isRound ? '8.5%' : '8%'}`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                    className={`absolute z-20 flex items-center justify-center border-2 border-red-600 bg-red-500/20 shadow-md ${
-                      highlightedTable.isRound ? 'rounded-full' : 'rounded-lg'
-                    }`}
-                  >
-                    {/* Centered Table Marker Pin */}
-                    <div className="absolute -top-12 bg-red-600 text-white font-sans font-extrabold text-xs px-2 py-1 rounded shadow border border-red-700 flex items-center gap-1 animate-bounce">
-                      <MapPin className="w-3 h-3 text-amber-200 fill-amber-200" />
-                      T-{selectedOrder.table}
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Map Info Legend */}
