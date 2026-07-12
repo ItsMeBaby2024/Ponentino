@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Drink } from '../types';
-import { RefreshCw, Copy, Check, Wine, Utensils, Zap, Clock, Sparkles, X, Heart } from 'lucide-react';
+import { RefreshCw, Copy, Check, Wine, Utensils, Zap, Clock, Sparkles, X, Heart, Send, AlertCircle } from 'lucide-react';
 import { drinksTranslations } from '../data/drinksTranslations';
 
 interface ResultCardProps {
@@ -10,6 +10,7 @@ interface ResultCardProps {
   avgDuration?: number;
   onRestart: () => void;
   language: 'en' | 'zh';
+  selectedTable: string | null;
 }
 
 const MBTI_CHARACTERS: Record<string, string> = {
@@ -242,12 +243,44 @@ const cleanIngredient = (ing: string): string => {
   return ing.replace(/\s*\d+(\.\d+)?\s*ml/gi, '').trim();
 };
 
-export default function ResultCard({ drink, mbti, scores, avgDuration, onRestart, language }: ResultCardProps) {
+export default function ResultCard({ drink, mbti, scores, avgDuration, onRestart, language, selectedTable }: ResultCardProps) {
   const [copied, setCopied] = useState(false);
   const [showMbtiDetails, setShowMbtiDetails] = useState(false);
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [orderStatus, setOrderStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const isZh = language === 'zh';
   const translation = drinksTranslations[drink.mbti];
+
+  const handleOrder = async () => {
+    if (orderStatus === 'success' || isOrdering) return;
+    setIsOrdering(true);
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: selectedTable || 'Unknown',
+          drinkName: drinkName,
+          category: drink.category,
+          price: drink.category === 'cocktail' ? '$98+' : '$78+',
+          mbti: mbti,
+        }),
+      });
+      if (response.ok) {
+        setOrderStatus('success');
+      } else {
+        setOrderStatus('error');
+      }
+    } catch (err) {
+      console.error('Error placing order:', err);
+      setOrderStatus('error');
+    } finally {
+      setIsOrdering(false);
+    }
+  };
 
   const charTitle = isZh ? (MBTI_CHARACTERS_ZH[mbti] || '') : (MBTI_CHARACTERS[mbti] || '');
   const emotionalProfile = isZh ? EMOTIONAL_PROFILES_ZH[mbti] : EMOTIONAL_PROFILES[mbti];
@@ -541,6 +574,41 @@ For entertainment and menu discovery only.`;
 
       {/* Share / Copy and Restart CTAs */}
       <div className="w-full flex flex-col gap-3 font-sans">
+        {/* Order Button */}
+        <button
+          onClick={handleOrder}
+          disabled={isOrdering || orderStatus === 'success'}
+          className={`w-full py-4 px-6 font-serif text-base font-bold rounded-xl shadow-md transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99] border ${
+            orderStatus === 'success'
+              ? 'bg-emerald-700 border-emerald-800 text-white cursor-default'
+              : orderStatus === 'error'
+              ? 'bg-rose-800 hover:bg-rose-900 border-rose-900 text-white cursor-pointer'
+              : 'bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 border-amber-900 text-white cursor-pointer hover:shadow-lg'
+          }`}
+        >
+          {isOrdering ? (
+            <>
+              <RefreshCw className="w-5 h-5 animate-spin" />
+              {isZh ? '正在送出訂單...' : 'Sending Order...'}
+            </>
+          ) : orderStatus === 'success' ? (
+            <>
+              <Check className="w-5 h-5 text-emerald-300" />
+              {isZh ? '下單成功！服務人員正為您準備' : 'Order Sent! Staff is preparing it'}
+            </>
+          ) : orderStatus === 'error' ? (
+            <>
+              <AlertCircle className="w-5 h-5" />
+              {isZh ? '下單失敗，請點擊重試' : 'Order Failed, click to retry'}
+            </>
+          ) : (
+            <>
+              <Send className="w-5 h-5" />
+              {isZh ? `立即下單 (桌號: ${selectedTable || '未選擇'})` : `Order Now (Table: ${selectedTable || 'None'})`}
+            </>
+          )}
+        </button>
+
         <button
           onClick={handleCopy}
           className="w-full py-4 px-6 bg-amber-800 hover:bg-amber-900 text-white font-serif text-base font-bold rounded-xl shadow-md transition-all duration-300 border border-amber-900 flex items-center justify-center gap-2 active:scale-[0.99]"

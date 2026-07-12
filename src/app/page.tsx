@@ -4,15 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { Question, Drink, MoodType, AnswerRecord } from '../types';
 import { generateQuizQuestions, calculateMBTI } from '../lib/scoring';
 import LandingScreen from '../components/LandingScreen';
+import TableSelectionStep from '../components/TableSelectionStep';
 import MoodStep from '../components/MoodStep';
 import TutorialStep from '../components/TutorialStep';
 import QuizCard from '../components/QuizCard';
 import ResultCard from '../components/ResultCard';
 
-type Step = 'landing' | 'mood' | 'tutorial' | 'quiz' | 'result';
+type Step = 'landing' | 'table' | 'mood' | 'tutorial' | 'quiz' | 'result';
 
 export default function Home() {
   const [step, setStep] = useState<Step>('landing');
+  const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -102,7 +104,7 @@ export default function Home() {
   }, []);
 
   const handleStartTasting = () => {
-    setStep('mood');
+    setStep('table');
   };
 
   const handleSelectMood = (mood: MoodType | null) => {
@@ -159,12 +161,15 @@ export default function Home() {
     } else if (step === 'tutorial') {
       setStep('mood');
     } else if (step === 'mood') {
+      setStep('table');
+    } else if (step === 'table') {
       setStep('landing');
     }
   };
 
   const handleRestart = () => {
     setSelectedMood(null);
+    setSelectedTable(null);
     setAnswers({});
     setCurrentQuestionIndex(0);
     setMatchedResult(null);
@@ -191,6 +196,16 @@ export default function Home() {
             onSelectDrink={handleSelectDirectDrink} 
             language={language}
             onLanguageChange={handleSetLanguage}
+          />
+        )}
+
+        {step === 'table' && (
+          <TableSelectionStep
+            selectedTable={selectedTable}
+            onSelect={setSelectedTable}
+            onConfirm={() => setStep('mood')}
+            onBack={handleBack}
+            language={language}
           />
         )}
 
@@ -222,6 +237,7 @@ export default function Home() {
             avgDuration={matchedResult.avgDuration}
             onRestart={handleRestart}
             language={language}
+            selectedTable={selectedTable}
           />
         )}
       </div>
