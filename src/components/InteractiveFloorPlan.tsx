@@ -1,28 +1,75 @@
 import React, { useState, useEffect } from 'react';
 
-export type TableId = '12' | '11' | '10' | '15' | '18' | '19' | '20' | '1' | '2' | '3';
+export type TableId =
+  | '41' | '41A' | '42' | '42A'
+  | '31' | '31A' | '31B'
+  | '56' | '56A' | '55' | '55A'
+  | '54' | '54A' | '53' | '53A'
+  | '52' | '52A' | '51' | '50' | '50A'
+  | '22' | '22A' | '21' | '21A'
+  | '12' | '12A' | '11' | '11A' | '10' | '10A'
+  | '63' | '63A' | '62' | '62A' | '61' | '61A';
 
 interface TableShape {
   id: TableId;
   cx: number;
   cy: number;
-  shape: 'circle' | 'rect';
-  r?: number;
-  w?: number;
-  h?: number;
+  shape: 'circle';
+  r: number;
 }
 
 const TABLE_SHAPES: TableShape[] = [
-  { id: '12', cx: 167, cy: 89, shape: 'circle', r: 85 },
-  { id: '11', cx: 90, cy: 366, shape: 'circle', r: 85 },
-  { id: '10', cx: 69, cy: 514, shape: 'circle', r: 85 },
-  { id: '15', cx: 545, cy: 539, shape: 'rect', w: 190, h: 120 },
-  { id: '18', cx: 1093, cy: 596, shape: 'circle', r: 100 },
-  { id: '19', cx: 1710, cy: 644, shape: 'rect', w: 200, h: 120 },
-  { id: '20', cx: 1981, cy: 742, shape: 'circle', r: 85 },
-  { id: '1', cx: 124, cy: 1316, shape: 'rect', w: 140, h: 110 },
-  { id: '2', cx: 230, cy: 1449, shape: 'circle', r: 75 },
-  { id: '3', cx: 77, cy: 1491, shape: 'circle', r: 75 }
+  // 10s series (bottom diagonal)
+  { id: '10', cx: 1350, cy: 1305, shape: 'circle', r: 35 },
+  { id: '10A', cx: 1379, cy: 1320, shape: 'circle', r: 35 },
+  { id: '11', cx: 1079, cy: 1218, shape: 'circle', r: 35 },
+  { id: '11A', cx: 1108, cy: 1232, shape: 'circle', r: 35 },
+  { id: '12', cx: 900, cy: 1165, shape: 'circle', r: 35 },
+  { id: '12A', cx: 930, cy: 1180, shape: 'circle', r: 35 },
+
+  // 20s series (bottom-left)
+  { id: '21', cx: 592, cy: 1079, shape: 'circle', r: 35 },
+  { id: '21A', cx: 621, cy: 1092, shape: 'circle', r: 35 },
+  { id: '22', cx: 366, cy: 975, shape: 'circle', r: 35 },
+  { id: '22A', cx: 395, cy: 990, shape: 'circle', r: 35 },
+
+  // 30s series (left curved wall)
+  { id: '31', cx: 239, cy: 740, shape: 'circle', r: 32 },
+  { id: '31A', cx: 245, cy: 708, shape: 'circle', r: 32 },
+  { id: '31B', cx: 245, cy: 641, shape: 'circle', r: 32 },
+
+  // 40s series (left-top arc)
+  { id: '41', cx: 442, cy: 384, shape: 'circle', r: 35 },
+  { id: '41A', cx: 404, cy: 398, shape: 'circle', r: 35 },
+  { id: '42', cx: 631, cy: 365, shape: 'circle', r: 35 },
+  { id: '42A', cx: 601, cy: 339, shape: 'circle', r: 35 },
+
+  // Column 56/55
+  { id: '56', cx: 283, cy: 622, shape: 'circle', r: 35 },
+  { id: '56A', cx: 258, cy: 594, shape: 'circle', r: 35 },
+  { id: '55', cx: 279, cy: 725, shape: 'circle', r: 35 },
+  { id: '55A', cx: 275, cy: 678, shape: 'circle', r: 35 },
+
+  // Column 54/53
+  { id: '54', cx: 502, cy: 616, shape: 'circle', r: 35 },
+  { id: '54A', cx: 471, cy: 594, shape: 'circle', r: 35 },
+  { id: '53', cx: 508, cy: 760, shape: 'circle', r: 35 },
+  { id: '53A', cx: 470, cy: 780, shape: 'circle', r: 35 },
+
+  // Column 52/51/50
+  { id: '52', cx: 721, cy: 560, shape: 'circle', r: 35 },
+  { id: '52A', cx: 662, cy: 559, shape: 'circle', r: 35 },
+  { id: '51', cx: 880, cy: 659, shape: 'circle', r: 35 },
+  { id: '50', cx: 882, cy: 803, shape: 'circle', r: 35 },
+  { id: '50A', cx: 873, cy: 853, shape: 'circle', r: 35 },
+
+  // La Collina (slanted right room)
+  { id: '61', cx: 1549, cy: 1065, shape: 'circle', r: 35 },
+  { id: '61A', cx: 1572, cy: 1032, shape: 'circle', r: 35 },
+  { id: '62', cx: 1598, cy: 991, shape: 'circle', r: 35 },
+  { id: '62A', cx: 1627, cy: 948, shape: 'circle', r: 35 },
+  { id: '63', cx: 1656, cy: 903, shape: 'circle', r: 35 },
+  { id: '63A', cx: 1687, cy: 858, shape: 'circle', r: 35 }
 ];
 
 interface InteractiveFloorPlanProps {
@@ -121,13 +168,14 @@ export default function InteractiveFloorPlan({
               font-weight: 900;
               font-size: 34px;
               fill: #78281F;
-              opacity: 0;
+              opacity: 0.85;
               pointer-events: none;
               transition: all 0.3s ease;
               text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9);
             }
             .table-unit:hover .table-label {
-              opacity: 0.9;
+              opacity: 1;
+              font-size: 36px;
             }
             .table-unit[aria-selected="true"] .table-label {
               opacity: 1;
@@ -155,23 +203,12 @@ export default function InteractiveFloorPlan({
               onClick={() => handleTableClick(table.id)}
               onKeyDown={(e) => handleKeyDown(e, table.id)}
             >
-              {table.shape === 'circle' ? (
-                <circle
-                  cx={table.cx}
-                  cy={table.cy}
-                  r={table.r}
-                  className="table-surface"
-                />
-              ) : (
-                <rect
-                  x={table.cx - (table.w || 0) / 2}
-                  y={table.cy - (table.h || 0) / 2}
-                  width={table.w}
-                  height={table.h}
-                  rx={16}
-                  className="table-surface"
-                />
-              )}
+              <circle
+                cx={table.cx}
+                cy={table.cy}
+                r={table.r}
+                className="table-surface"
+              />
               {/* Overlay table numbers centered */}
               <text
                 x={table.cx}
