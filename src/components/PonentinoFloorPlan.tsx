@@ -90,7 +90,7 @@ function TableUnit({ table, selected, onSelect }: { table: TableDefinition; sele
         </>
       )}
       <rect className="table-hit-area" x="-13" y="-13" width="78" height="60" rx="9" />
-      <rect className="table-surface" x="0" y="0" width="52" height="34" rx="3" />
+      <rect className="table-surface" x="0" y="0" width="52" height="34" rx="3" filter="url(#table-shadow)" />
       <text className="table-label" x="26" y="21" textAnchor="middle">{table.id}</text>
     </g>
   );
@@ -173,7 +173,7 @@ export default function PonentinoFloorPlan({ selectedTable, onSelectionChange, c
           <text x="1010" y="780" textAnchor="middle" className="hostess-label"><tspan x="1010">Hostess</tspan><tspan x="1010" dy="25">Stand</tspan></text>
         </g>
 
-        <g filter="url(#table-shadow)">
+        <g>
           {TABLES.map((table) => (
             <TableUnit key={table.id} table={table} selected={activeTable === table.id} onSelect={() => selectTable(table.id)} />
           ))}

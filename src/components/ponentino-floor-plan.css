@@ -79,9 +79,11 @@
 
 .ponentino-floorplan .table-label {
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   pointer-events: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
 }
 
 .ponentino-floorplan .table-unit:hover .table-surface {
