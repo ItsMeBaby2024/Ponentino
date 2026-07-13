@@ -1,0 +1,122 @@
+/* Standalone Ponentino floor-plan styles: architectural paper, muted-blue tables, harvest-gold selection. */
+.ponentino-floorplan {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #c7bd9c;
+  background: #fbf7ec;
+  box-shadow: 0 20px 48px rgb(62 54 36 / 12%);
+  scrollbar-color: #b0a252 #eee7d5;
+}
+
+.ponentino-floorplan .floorplan-svg {
+  display: block;
+  width: 100%;
+  min-width: 720px;
+  height: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.ponentino-floorplan .architecture {
+  fill: none;
+  stroke: #3d3a34;
+  stroke-width: 2;
+}
+
+.ponentino-floorplan .architecture text,
+.ponentino-floorplan .venue-title,
+.ponentino-floorplan .table-label {
+  fill: #312e28;
+}
+
+.ponentino-floorplan .venue-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 44px;
+  letter-spacing: 1px;
+}
+
+.ponentino-floorplan .zone-label {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 31px;
+}
+
+.ponentino-floorplan .collina-label {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-style: italic;
+}
+
+.ponentino-floorplan .hostess-label {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+}
+
+.ponentino-floorplan .gold-rule {
+  stroke: #a99b65;
+  stroke-width: 1.5;
+}
+
+.ponentino-floorplan .table-unit {
+  cursor: pointer;
+  outline: none;
+}
+
+.ponentino-floorplan .table-hit-area {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.ponentino-floorplan .table-surface {
+  fill: #b9cad9;
+  stroke: #363a3b;
+  stroke-width: 2;
+  transition: fill 150ms cubic-bezier(.23, 1, .32, 1), stroke 150ms cubic-bezier(.23, 1, .32, 1);
+}
+
+.ponentino-floorplan .table-chair {
+  fill: #fffdf7;
+  stroke: #363a3b;
+  stroke-width: 2;
+}
+
+.ponentino-floorplan .table-label {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.ponentino-floorplan .table-unit:hover .table-surface {
+  fill: #cedbe5;
+}
+
+.ponentino-floorplan .table-unit[data-selected='true'] .table-surface {
+  fill: #e9b735;
+  stroke: #8a6714;
+}
+
+.ponentino-floorplan .table-unit[data-selected='true']:hover .table-surface {
+  fill: #f1c64d;
+}
+
+.ponentino-floorplan .table-unit:focus-visible .table-surface {
+  stroke: #a9780a;
+  stroke-width: 4;
+}
+
+.ponentino-floorplan .autumn-sprig {
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .ponentino-floorplan .floorplan-svg {
+    min-width: 780px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ponentino-floorplan .table-surface {
+    transition: none;
+  }
+}
