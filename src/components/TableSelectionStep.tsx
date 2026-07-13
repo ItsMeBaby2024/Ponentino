@@ -1,5 +1,5 @@
-import React from 'react';
-import { ArrowLeft, Sparkles, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Sparkles, MapPin, Maximize2, X } from 'lucide-react';
 import InteractiveFloorPlan from './InteractiveFloorPlan';
 
 interface TableSelectionStepProps {
@@ -18,6 +18,7 @@ export default function TableSelectionStep({
   language
 }: TableSelectionStepProps) {
   const isZh = language === 'zh';
+  const [isZoomed, setIsZoomed] = useState(false);
 
   return (
     <div className="flex flex-col items-center justify-between min-h-[82vh] py-6 px-4 max-w-md mx-auto relative text-center">
@@ -45,6 +46,18 @@ export default function TableSelectionStep({
       <div className="w-full flex-1 flex flex-col justify-center my-2">
         <div className="bg-white border-2 border-amber-900/10 rounded-3xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between">
           <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-600 via-rose-700 to-amber-700"></div>
+
+          {/* Zoom / Fall Plan button */}
+          <button
+            onClick={() => setIsZoomed(true)}
+            className="absolute top-2 right-2 z-10 flex items-center gap-1 bg-white/90 border border-amber-900/15 rounded-full px-2 py-1 shadow-sm hover:bg-amber-50 active:scale-95 transition-all"
+            title={isZh ? '放大平面圖' : 'Enlarge floor plan'}
+          >
+            <Maximize2 className="w-3 h-3 text-amber-800" />
+            <span className="text-[9px] font-sans font-bold text-amber-900 tracking-wide">
+              {isZh ? '平面圖' : 'Fall Plan'}
+            </span>
+          </button>
 
           {/* Title Area */}
           <div className="mb-4">
@@ -88,6 +101,34 @@ export default function TableSelectionStep({
           {isZh ? (selectedTable ? `確認桌號 (${selectedTable} 號)` : '請先選擇桌號') : (selectedTable ? `Confirm Table ${selectedTable}` : 'Select a Table')}
         </button>
       </div>
+
+      {/* Full-screen zoom view (fills the whole screen, rotated to fit a phone) */}
+      {isZoomed && (
+        <div className="fixed inset-0 z-50 bg-[#faf4e8] flex items-center justify-center overflow-hidden">
+          {/* Close button */}
+          <button
+            onClick={() => setIsZoomed(false)}
+            className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-amber-800 text-white rounded-full px-4 py-2 shadow-lg active:scale-95 transition-transform"
+            title={isZh ? '關閉' : 'Close'}
+          >
+            <X className="w-4 h-4" />
+            <span className="text-xs font-sans font-bold">
+              {isZh ? '關閉' : 'Close'}
+            </span>
+          </button>
+
+          {/* Rotated, screen-filling floor plan */}
+          <div
+            className="[transform:rotate(90deg)]"
+            style={{ width: 'min(100vh, 133vw)' }}
+          >
+            <InteractiveFloorPlan
+              selectedTable={selectedTable}
+              onSelectionChange={onSelect}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
