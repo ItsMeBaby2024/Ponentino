@@ -176,7 +176,7 @@ export function getMatchedDrink(mbti: string, pref: 'cocktail' | 'mocktail'): Dr
       ENFJ: 'ENFP', // Cranberry Ginger Fizz 0.0 -> Limoncello Prosecco Spritz
       INTP: 'INTJ', // Lemon Ginger Cooler 0.0 -> Fernet Ginger Highball
       ISFP: 'INFJ', // Cranberry Pineapple Cooler 0.0 -> Pineapple Rum Cooler
-      ISFJ: 'ISTJ', // Pineapple Orange Cooler 0.0 -> Milano Torino
+      ISFJ: 'ISTJ', // Pineapple Orange Cooler 0.0 -> Citrus Cranberry Punch
       INFP: 'INFJ', // Italian Soda Rosso 0.0 -> Pineapple Rum Cooler
     };
     const targetMbti = cocktailMapping[mbti] || mbti;
@@ -189,7 +189,7 @@ export function getMatchedDrink(mbti: string, pref: 'cocktail' | 'mocktail'): Dr
       ESFJ: 'ISFJ', // Cosmopolitan -> Pineapple Orange Cooler 0.0
       INFJ: 'INFP', // Pineapple Rum Cooler -> Italian Soda Rosso 0.0
       ESTJ: 'ISFJ', // Negroni -> Pineapple Orange Cooler 0.0
-      ISTJ: 'ISFJ', // Milano Torino -> Pineapple Orange Cooler 0.0
+      ISTJ: 'ISFJ', // Citrus Cranberry Punch -> Pineapple Orange Cooler 0.0
       ESTP: 'ISFP', // Garibaldi -> Cranberry Pineapple Cooler 0.0
       ISTP: 'ISFP', // Italian Margarita -> Cranberry Pineapple Cooler 0.0
       ENTP: 'INTP', // Limoncello Martini -> Lemon Ginger Cooler 0.0

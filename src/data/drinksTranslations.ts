@@ -33,12 +33,12 @@ export const drinksTranslations: Record<string, DrinkTranslation> = {
     ingredientsZh: ['費奈特·布蘭卡 25毫升', '橙汁 20毫升', '檸檬汁 10毫升', '薑汁啤酒 100毫升']
   },
   ISTJ: {
-    nameZh: "米蘭都靈 (Milano Torino)",
-    tasteProfileZh: "甜中帶苦、葡萄酒香、歷史底蘊",
-    introZh: "循規蹈矩、典雅經典且完全值得信賴。歷史悠久的米蘭都靈代表了意式餐前酒 (Aperitivo) 文化的堅實基石，與你務實、嚴謹且忠誠的 ISTJ 檢查員性格高度契合。",
+    nameZh: "柑橘蔓越莓潘趣 (Citrus Cranberry Punch)",
+    tasteProfileZh: "明亮柑橘、酸甜蔓越莓、順滑果香",
+    introZh: "循規蹈矩、可靠踏實且清新宜人。這款以白蘭姆酒與橙皮甜酒為基底，融合酸甜蔓越莓與新鮮柑橘的均衡潘趣，與你務實、嚴謹且忠誠的 ISTJ 檢查員性格高度契合。",
     pairingZh: ['橄欖', '薩拉米冷肉', '佛卡夏麵包', '披薩', '番茄普切塔'],
-    menuDescriptionZh: "尼格羅尼的历史前身。來自米蘭的金巴利與來自都靈的紅香艾酒純粹而優雅地相遇，甜苦交織，雋永綿長。",
-    ingredientsZh: ['金巴利 45毫升', '紅香艾酒 45毫升']
+    menuDescriptionZh: "一款清爽的果香潘趣。順滑白蘭姆酒與橙皮甜酒，在新鮮檸檬與橙汁的提亮下，融合酸甜蔓越莓，尾韻乾淨平衡。",
+    ingredientsZh: ['白蘭姆酒 40毫升', '橙皮甜酒 20毫升', '檸檬汁 15毫升', '蔓越莓汁 60毫升', '橙汁 30毫升']
   },
   ESTP: {
     nameZh: "加里波第 (Garibaldi)",

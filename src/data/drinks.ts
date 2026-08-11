@@ -83,21 +83,24 @@ export const drinks: Drink[] = [
   },
   {
     mbti: 'ISTJ',
-    name: 'Milano Torino',
+    name: 'Citrus Cranberry Punch',
     category: 'cocktail',
     style: 'non-sparkling',
-    abv: '16.5%',
+    abv: '13%',
     ingredients: [
-      'Campari 45 ml',
-      'sweet vermouth 45 ml'
+      'white rum 40 ml',
+      'triple sec 20 ml',
+      'lemon juice 15 ml',
+      'cranberry juice 60 ml',
+      'orange juice 30 ml'
     ],
-    tasteProfile: 'bittersweet, winey, historic aperitivo',
-    intro: 'Orderly, classic, and completely reliable. The historic Mi-To represents the solid, time-tested foundation of Italian aperitivo culture, beautifully aligning with your protective, structured, and loyal ISTJ nature.',
+    tasteProfile: 'bright citrus, tart cranberry, smooth fruity punch',
+    intro: 'Orderly, dependable, and quietly refreshing. This well-balanced punch of white rum, triple sec, and tart cranberry brightened with fresh citrus reflects your practical, structured, and loyal ISTJ nature.',
     pairing: ['olives', 'salumi', 'focaccia', 'pizza', 'tomato bruschetta'],
     machineSlots: [5, 7],
     virtualTopUp: 'none',
-    menuDescription: 'The historic precursor to the Negroni. A pure, bittersweet, and elegant combination of Campari from Milan and Sweet Vermouth from Turin.',
-    imagePrompt: 'A Milano Torino cocktail in a lowball glass with an orange twist, elegant glassware, warm candlelit setting of an authentic Italian bistro, rustic cream textures',
+    menuDescription: 'A crisp, fruit-forward punch. Smooth white rum and triple sec lifted by fresh lemon and orange, rounded out with tart cranberry for a clean, balanced finish.',
+    imagePrompt: 'A Citrus Cranberry Punch cocktail in a lowball glass with an orange wheel and cranberries, vibrant ruby-orange color, warm candlelit setting of an authentic Italian bistro, rustic cream textures',
     colorPalette: {
       primary: '#BE123C',
       secondary: '#F59E0B',
